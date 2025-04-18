@@ -8,21 +8,41 @@ jobs:
       - checkout
 
       - run:
-          name: 🔧 Step 1 - Setup environment
+          name: 🔧 Step 1 - Use Lighthouse to deploy Snorkel on edge
           command: echo "Pretend we're setting up the environment"
 
       - run:
-          name: 🧪 Step 2 - Run tests
+          name: 🧪 Step 2 - Run smoke tests
           command: echo "Pretend we're running tests"
+      - run:
+          name: 🧪 Step 3 - Cleanup Tests environment for new run
+          command: echo "Pretend we're cleaning up the environment"
 
       - run:
-          name: 🚀 Step 3 - Deploy to staging
+          name: 🚀 Step 3 - Run Python-unit-tests on Test Environment
           command: echo "Pretend we're deploying to staging"
 
       - run:
-          name: ✅ Step 4 - Finish
+          name: ✅ Step 4 - Run Playwright-tests on Test Environment
           command: echo "All done!"
-
+      - run:
+          name: 🚀 Step 5 - Check Basic Tests Paased for Edge Upgrades
+          command: echo "Pretend we're deploying to production"
+      - run:
+          name: 🚀 Step 6 - Upgrade Snorkel on Edge
+          command: echo "Pretend we're deploying to production"
+      - run:
+          name: 🚀 Step 8 - Upgrade Snorkel on Live
+          command: echo "Pretend we're deploying to production"
+      - run:
+        name: 🚀 Step 10 - Run Performance-tests on Test System
+        command: echo "Pretend we're deploying to production"
+      - run:
+          name: 🚀 Step 11 - Upgrade all Snorkel Hosted Customers
+          command: echo "Pretend we're deploying to production"
+      - run:
+          name: 🚀 Step 12 - Upload Artifacts for On-Prem Deployments
+          command: echo "Pretend we're deploying to production"
 workflows:
   version: 2
   Snorkel-Deploy-Pipeline:
