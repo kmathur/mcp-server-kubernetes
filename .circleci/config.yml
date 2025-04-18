@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  demo_pipeline:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+
+      - run:
+          name: 🔧 Step 1 - Setup environment
+          command: echo "Pretend we're setting up the environment"
+
+      - run:
+          name: 🧪 Step 2 - Run tests
+          command: echo "Pretend we're running tests"
+
+      - run:
+          name: 🚀 Step 3 - Deploy to staging
+          command: echo "Pretend we're deploying to staging"
+
+      - run:
+          name: ✅ Step 4 - Finish
+          command: echo "All done!"
+
+workflows:
+  version: 2
+  demo_workflow:
+    jobs:
+      - demo_pipeline
