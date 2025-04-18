@@ -7,102 +7,77 @@ commands:
     steps:
       - run:
           name: Send Slack Notification
-          when: always
           command: |
             echo "Implement Slack notification"
 
-# Define environment variables
-parameters:
-  deployment_environment:
-    type: string
-    default: "edge"
-
+# Define jobs
 jobs:
   deploy_pipeline:
     docker:
       - image: cimg/base:stable
-    environment:
-      DEPLOY_ENV: << pipeline.parameters.deployment_environment >>
     steps:
       - checkout
 
       # Setup and validation
       - run:
-          name: 🔧 Step 1 - Deploy to Edge Environment
+          name: "🔧 Step 1 - Deploy to Edge Environment"
           command: echo "Pretend we're setting up the environment"
-          when: on_success
 
       # Testing phase
       - run:
-          name: 🧪 Step 2 - Run smoke tests
+          name: "🧪 Step 2 - Run smoke tests"
           command: echo "Pretend we're running tests"
           no_output_timeout: 30m
-          when: on_success
 
       - run:
-          name: 🧪 Step 3 - Cleanup Test Environment
+          name: "🧪 Step 3 - Cleanup Test Environment"
           command: echo "Pretend we're cleaning up the environment"
-          when: always # Run cleanup even if previous steps fail
 
       - run:
-          name: 🧪 Step 4 - Run Python Unit Tests
+          name: "🧪 Step 4 - Run Python Unit Tests"
           command: echo "Pretend we're running Python tests"
           no_output_timeout: 30m
-          when: on_success
 
       - run:
-          name: 🧪 Step 5 - Run Playwright Tests
+          name: "🧪 Step 5 - Run Playwright Tests"
           command: echo "Pretend we're running Playwright tests"
           no_output_timeout: 30m
-          when: on_success
 
       # Deployment phase
       - run:
-          name: ✅ Step 6 - Validate Edge Upgrade Requirements
+          name: "✅ Step 6 - Validate Edge Upgrade Requirements"
           command: echo "Checking prerequisites for edge deployment"
-          when: on_success
 
       - run:
-          name: 🚀 Step 7 - Deploy to Edge
+          name: "🚀 Step 7 - Deploy to Edge"
           command: echo "Deploying to edge"
-          when: on_success
 
       - run:
-          name: 🚀 Step 8 - Deploy to Production
+          name: "🚀 Step 8 - Deploy to Production"
           command: echo "Deploying to production"
-          when: on_success
 
       - run:
-          name: 🔍 Step 9 - Run Performance Tests
+          name: "🔍 Step 9 - Run Performance Tests"
           command: echo "Running performance tests"
           no_output_timeout: 60m
-          when: on_success
 
       - run:
-          name: 🚀 Step 10 - Update Customer Environments
+          name: "🚀 Step 10 - Update Customer Environments"
           command: |
             echo "Updating customer environments"
             echo "Adding verification steps"
-          when: on_success
 
       - run:
-          name: 📦 Step 11 - Prepare On-Prem Artifacts
+          name: "📦 Step 11 - Prepare On-Prem Artifacts"
           command: |
             echo "Building artifacts"
             echo "Running verification"
             echo "Uploading to artifact storage"
-          when: on_success
 
-      # Notification step
       - notify_slack
 
 workflows:
   version: 2
-  Snorkel-Deploy-Pipeline:
+  deploy_pipeline:
     jobs:
-      - deploy_pipeline:
-          context:
-            - deployment-context
-          filters:
-            branches:
-              only: main
+      - deploy_pipeline
