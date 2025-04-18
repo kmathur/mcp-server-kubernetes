@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  demo_pipeline:
+  deploy_pipeline:
     docker:
       - image: cimg/base:stable
     steps:
