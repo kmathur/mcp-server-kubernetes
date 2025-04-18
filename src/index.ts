@@ -74,7 +74,7 @@ import { listContexts, listContextsSchema } from "./tools/list_contexts.js";
 import { getCurrentContext, getCurrentContextSchema } from "./tools/get_current_context.js";
 import { setCurrentContext, setCurrentContextSchema } from "./tools/set_current_context.js";
 import { createLightHouseInstance, createLightHouseInstanceSchema, getLightHouseDemoInstance, getLightHouseDemoInstanceSchema } from "./tools/lighthouse_operations.js";
-
+import { invokeCirclePipeline, invokeCirclePipelineSchema } from "./tools/circle_pipelines.js";
 // Check if non-destructive tools only mode is enabled
 const nonDestructiveTools = process.env.ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS === 'true';
 
@@ -139,7 +139,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     DeleteCronJobSchema,
     CreateConfigMapSchema,
     createLightHouseInstanceSchema,
-    getLightHouseDemoInstanceSchema
+    getLightHouseDemoInstanceSchema,
+    invokeCirclePipelineSchema
   ];
 
   // Filter out destructive tools if ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS is set to 'true'
@@ -564,8 +565,15 @@ server.setRequestHandler(
               }>;
             }
           );
-        }
+          }
 
+        case "invoke_circle_pipeline": {
+          return await invokeCirclePipeline(
+            input as {
+              branch: string;
+            }
+          );
+        }
         default:
           throw new McpError(ErrorCode.InvalidRequest, `Unknown tool: ${name}`);
       }
