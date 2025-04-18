@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const URL = "http://lighthouse-api.g498.io/instances";
+const URL = "http://<lighthouse_api_url>/instances";
 
 const payload = {
-  requester: "kartik.mathur@snorkel.ai",
+  requester: "<your_email>",
   version: "25.3.1",
   size: "0.25x_Standard",
   gpu: false,
@@ -12,7 +12,7 @@ const payload = {
 };
 
 const headers = {
-  Authorization: "key bGlnaHRob3VzZSBhcGkga2V5IFNFRlVJU0VGSEVTSUZETlJKRzMzNDIK"
+  Authorization: "key <your_api_key>"
 };
 
 export const createLightHouseInstanceSchema = {
@@ -67,7 +67,7 @@ export const createLightHouseInstanceSchema = {
 
   export async function getLightHouseDemoInstance(params: { owner: string }): Promise<{ content: { type: string; text: string }[] }> {
     try {
-      const URL = "http://lighthouse-api.g498.io/instances/view";
+      const URL = "http://<lighthouse_api_url>/instances/view";
       const response = await axios.get(`${URL}?owner=${params.owner}`, { headers });
       
       return {
