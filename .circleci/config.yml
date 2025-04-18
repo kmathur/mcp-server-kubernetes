@@ -25,6 +25,6 @@ jobs:
 
 workflows:
   version: 2
-  demo_workflow:
+  Snorkel-Deploy-Pipeline:
     jobs:
-      - demo_pipeline
+      - deploy_pipeline
