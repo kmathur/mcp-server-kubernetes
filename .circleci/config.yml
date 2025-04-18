@@ -1,50 +1,108 @@
 version: 2.1
 
+# Define reusable commands
+commands:
+  notify_slack:
+    description: "Notify Slack about deployment status"
+    steps:
+      - run:
+          name: Send Slack Notification
+          when: always
+          command: |
+            echo "Implement Slack notification"
+
+# Define environment variables
+parameters:
+  deployment_environment:
+    type: string
+    default: "edge"
+
 jobs:
   deploy_pipeline:
     docker:
       - image: cimg/base:stable
+    environment:
+      DEPLOY_ENV: << pipeline.parameters.deployment_environment >>
     steps:
       - checkout
 
+      # Setup and validation
       - run:
-          name: 🔧 Step 1 - Use Lighthouse to deploy Snorkel on edge
+          name: 🔧 Step 1 - Deploy to Edge Environment
           command: echo "Pretend we're setting up the environment"
+          when: on_success
 
+      # Testing phase
       - run:
           name: 🧪 Step 2 - Run smoke tests
           command: echo "Pretend we're running tests"
+          no_output_timeout: 30m
+          when: on_success
+
       - run:
-          name: 🧪 Step 3 - Cleanup Tests environment for new run
+          name: 🧪 Step 3 - Cleanup Test Environment
           command: echo "Pretend we're cleaning up the environment"
+          when: always # Run cleanup even if previous steps fail
 
       - run:
-          name: 🚀 Step 3 - Run Python-unit-tests on Test Environment
-          command: echo "Pretend we're deploying to staging"
+          name: 🧪 Step 4 - Run Python Unit Tests
+          command: echo "Pretend we're running Python tests"
+          no_output_timeout: 30m
+          when: on_success
 
       - run:
-          name: ✅ Step 4 - Run Playwright-tests on Test Environment
-          command: echo "All done!"
+          name: 🧪 Step 5 - Run Playwright Tests
+          command: echo "Pretend we're running Playwright tests"
+          no_output_timeout: 30m
+          when: on_success
+
+      # Deployment phase
       - run:
-          name: 🚀 Step 5 - Check Basic Tests Paased for Edge Upgrades
-          command: echo "Pretend we're deploying to production"
+          name: ✅ Step 6 - Validate Edge Upgrade Requirements
+          command: echo "Checking prerequisites for edge deployment"
+          when: on_success
+
       - run:
-          name: 🚀 Step 6 - Upgrade Snorkel on Edge
-          command: echo "Pretend we're deploying to production"
+          name: 🚀 Step 7 - Deploy to Edge
+          command: echo "Deploying to edge"
+          when: on_success
+
       - run:
-          name: 🚀 Step 8 - Upgrade Snorkel on Live
-          command: echo "Pretend we're deploying to production"
+          name: 🚀 Step 8 - Deploy to Production
+          command: echo "Deploying to production"
+          when: on_success
+
       - run:
-        name: 🚀 Step 10 - Run Performance-tests on Test System
-        command: echo "Pretend we're deploying to production"
+          name: 🔍 Step 9 - Run Performance Tests
+          command: echo "Running performance tests"
+          no_output_timeout: 60m
+          when: on_success
+
       - run:
-          name: 🚀 Step 11 - Upgrade all Snorkel Hosted Customers
-          command: echo "Pretend we're deploying to production"
+          name: 🚀 Step 10 - Update Customer Environments
+          command: |
+            echo "Updating customer environments"
+            echo "Adding verification steps"
+          when: on_success
+
       - run:
-          name: 🚀 Step 12 - Upload Artifacts for On-Prem Deployments
-          command: echo "Pretend we're deploying to production"
+          name: 📦 Step 11 - Prepare On-Prem Artifacts
+          command: |
+            echo "Building artifacts"
+            echo "Running verification"
+            echo "Uploading to artifact storage"
+          when: on_success
+
+      # Notification step
+      - notify_slack
+
 workflows:
   version: 2
   Snorkel-Deploy-Pipeline:
     jobs:
-      - deploy_pipeline
+      - deploy_pipeline:
+          context:
+            - deployment-context
+          filters:
+            branches:
+              only: main
