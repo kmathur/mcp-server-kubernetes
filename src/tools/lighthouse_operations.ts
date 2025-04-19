@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const LIGHTHOUSE_API_URL = process.env.LIGHTHOUSE_API_URL || "<lighthouse_api_url>";
-const URL = `http://${LIGHTHOUSE_API_URL}/instances`;
+//const LIGHTHOUSE_API_URL = process.env.LIGHTHOUSE_API_URL || "<lighthouse_api_url>";
+//const URL = `http://${LIGHTHOUSE_API_URL}/instances`;
 
+const URL_BASE = "http://lighthouse-api.g498.io";
 const payload = {
   requester: "<your_email>",
   version: "25.3.1",
@@ -12,8 +13,9 @@ const payload = {
   expiration_date: "2025-04-20"
 };
 
+
 const headers = {
-  Authorization: `key ${process.env.LIGHTHOUSE_API_KEY || ""}`
+  Authorization: "key <api_key>"
 };
 
 export const createLightHouseInstanceSchema = {
@@ -68,8 +70,8 @@ export const createLightHouseInstanceSchema = {
 
   export async function getLightHouseDemoInstance(params: { owner: string }): Promise<{ content: { type: string; text: string }[] }> {
     try {
-      const LIGHTHOUSE_API_URL = process.env.LIGHTHOUSE_API_URL || "<lighthouse_api_url>";
-      const URL = `http://${LIGHTHOUSE_API_URL}/instances`;
+      //const LIGHTHOUSE_API_URL = process.env.LIGHTHOUSE_API_URL || "<lighthouse_api_url>";
+      const URL = `${URL_BASE}/instances/view`;
       const response = await axios.get(`${URL}?owner=${params.owner}`, { headers });
       
       return {
@@ -92,6 +94,7 @@ export const createLightHouseInstanceSchema = {
   
   export async function createLightHouseInstance(params: typeof payload): Promise<{ content: { type: string; text: string }[] }> {
     try {
+      const URL = `${URL_BASE}/instances`;
       const response = await axios.post(URL, params, { headers });
       
       return {
