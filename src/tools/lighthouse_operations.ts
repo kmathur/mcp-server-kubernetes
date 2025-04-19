@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const URL = "http://<lighthouse_api_url>/instances";
+const LIGHTHOUSE_API_URL = process.env.LIGHTHOUSE_API_URL || "<lighthouse_api_url>";
+const URL = `http://${LIGHTHOUSE_API_URL}/instances`;
 
 const payload = {
   requester: "<your_email>",
@@ -12,7 +13,7 @@ const payload = {
 };
 
 const headers = {
-  Authorization: "key <your_api_key>"
+  Authorization: `key ${process.env.LIGHTHOUSE_API_KEY || ""}`
 };
 
 export const createLightHouseInstanceSchema = {
@@ -67,7 +68,8 @@ export const createLightHouseInstanceSchema = {
 
   export async function getLightHouseDemoInstance(params: { owner: string }): Promise<{ content: { type: string; text: string }[] }> {
     try {
-      const URL = "http://<lighthouse_api_url>/instances/view";
+      const LIGHTHOUSE_API_URL = process.env.LIGHTHOUSE_API_URL || "<lighthouse_api_url>";
+      const URL = `http://${LIGHTHOUSE_API_URL}/instances`;
       const response = await axios.get(`${URL}?owner=${params.owner}`, { headers });
       
       return {
