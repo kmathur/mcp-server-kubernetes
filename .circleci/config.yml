@@ -43,7 +43,7 @@ jobs:
       - checkout
       - setup_remote_docker
 
-      # Install circleci CLI if not present
+      # Install CircleCI CLI if not present
       - run:
           name: Install CircleCI CLI
           command: |
@@ -145,8 +145,7 @@ workflows:
   deploy_pipeline:
     jobs:
       - deploy_pipeline:
-          # Pass parameters directly to the job
-          skip_steps: << pipeline.parameters.skip_steps >>
+          skip_steps: << parameters.skip_steps >> # Pass parameter directly from workflow to job
           filters:
             branches:
               only:
