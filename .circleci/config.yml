@@ -129,6 +129,7 @@ workflows:
   deploy_pipeline:
     jobs:
       - deploy_pipeline:
+          skip_steps: "<< pipeline.parameters.skip_steps >>"
           filters:
             branches:
               only:
