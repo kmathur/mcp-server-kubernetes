@@ -125,6 +125,7 @@ jobs:
       - notify_slack
 
 workflows:
+  version: 2
   deploy_pipeline:
     jobs:
       - deploy_pipeline:
