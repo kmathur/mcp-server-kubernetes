@@ -26,11 +26,7 @@ commands:
           name: "[Check Skip] << parameters.step_name >>"
           command: |
             if [[ "<< pipeline.parameters.skip_steps >>" == *"<< parameters.step_name >>"* ]]; then
-              echo "[Skipped] << parameters.step_name >>"
-              exit 0
-            else
-              echo "Running << parameters.step_name >>"
-              exit 1
+              circleci-agent step halt
             fi
 
 # Define jobs
@@ -45,14 +41,12 @@ jobs:
           step_name: "Deploy to Edge Environment"
       - run:
           name: "🔧 Deploy to Edge Environment"
-          when: on_fail
           command: echo "Pretend we're setting up the environment"
 
       - should_skip_step:
           step_name: "Run smoke tests"
       - run:
           name: "🧪 Run smoke tests"
-          when: on_fail
           command: echo "Pretend we're running tests"
           no_output_timeout: 30m
 
@@ -60,14 +54,12 @@ jobs:
           step_name: "Cleanup Test Environment"
       - run:
           name: "🧪 Cleanup Test Environment"
-          when: on_fail
           command: echo "Pretend we're cleaning up the environment"
 
       - should_skip_step:
           step_name: "Run Python Unit Tests"
       - run:
           name: "🧪 Run Python Unit Tests"
-          when: on_fail
           command: echo "Pretend we're running Python tests"
           no_output_timeout: 30m
 
@@ -75,7 +67,6 @@ jobs:
           step_name: "Run Playwright Tests"
       - run:
           name: "🧪 Run Playwright Tests"
-          when: on_fail
           command: echo "Pretend we're running Playwright tests"
           no_output_timeout: 30m
 
@@ -83,28 +74,24 @@ jobs:
           step_name: "Validate Edge Upgrade Requirements"
       - run:
           name: "✅ Validate Edge Upgrade Requirements"
-          when: on_fail
           command: echo "Checking prerequisites for edge deployment"
 
       - should_skip_step:
           step_name: "Deploy to Edge"
       - run:
           name: "🚀 Deploy to Edge"
-          when: on_fail
           command: echo "Deploying to edge"
 
       - should_skip_step:
           step_name: "Deploy to Production"
       - run:
           name: "🚀 Deploy to Production"
-          when: on_fail
           command: echo "Deploying to production"
 
       - should_skip_step:
           step_name: "Run Performance Tests"
       - run:
           name: "🔍 Run Performance Tests"
-          when: on_fail
           command: echo "Running performance tests"
           no_output_timeout: 60m
 
@@ -112,7 +99,6 @@ jobs:
           step_name: "Update Customer Environments"
       - run:
           name: "🚀 Update Customer Environments"
-          when: on_fail
           command: |
             echo "Updating customer environments"
             echo "Adding verification steps"
@@ -121,7 +107,6 @@ jobs:
           step_name: "Prepare On-Prem Artifacts"
       - run:
           name: "📦 Prepare On-Prem Artifacts"
-          when: on_fail
           command: |
             echo "Building artifacts"
             echo "Running verification"
