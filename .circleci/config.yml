@@ -33,6 +33,10 @@ commands:
 # Define jobs
 jobs:
   deploy_pipeline:
+    parameters:
+      skip_steps:
+        type: string
+        default: ""
     docker:
       - image: cimg/python:3.9
     steps:
