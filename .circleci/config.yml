@@ -21,13 +21,11 @@ commands:
     parameters:
       step_name:
         type: string
-      skip_steps:
-        type: string
     steps:
       - run:
           name: "[Check Skip] << parameters.step_name >>"
           command: |
-            if [[ "<< parameters.skip_steps >>" == *"<< parameters.step_name >>"* ]]; then
+            if [[ "<< pipeline.parameters.skip_steps >>" == *"<< parameters.step_name >>"* ]]; then
               echo "Skipping << parameters.step_name >>"
               circleci-agent step halt
             fi
@@ -35,10 +33,6 @@ commands:
 # Define jobs
 jobs:
   deploy_pipeline:
-    parameters:
-      skip_steps:
-        type: string
-        default: ""
     docker:
       - image: cimg/python:3.9
     steps:
@@ -56,7 +50,6 @@ jobs:
       # Deploy to Edge Environment
       - should_skip_step:
           step_name: "Deploy to Edge Environment"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🔧 Deploy to Edge Environment"
           command: echo "Pretend we're setting up the environment"
@@ -64,7 +57,6 @@ jobs:
       # Run Smoke Tests
       - should_skip_step:
           step_name: "Run smoke tests"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🧪 Run smoke tests"
           command: echo "Pretend we're running tests"
@@ -73,7 +65,6 @@ jobs:
       # Cleanup Test Environment
       - should_skip_step:
           step_name: "Cleanup Test Environment"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🧪 Cleanup Test Environment"
           command: echo "Pretend we're cleaning up the environment"
@@ -81,7 +72,6 @@ jobs:
       # Run Python Unit Tests
       - should_skip_step:
           step_name: "Run Python Unit Tests"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🧪 Run Python Unit Tests"
           command: echo "Pretend we're running Python tests"
@@ -90,7 +80,6 @@ jobs:
       # Run Playwright Tests
       - should_skip_step:
           step_name: "Run Playwright Tests"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🧪 Run Playwright Tests"
           command: echo "Pretend we're running Playwright tests"
@@ -99,7 +88,6 @@ jobs:
       # Validate Edge Upgrade Requirements
       - should_skip_step:
           step_name: "Validate Edge Upgrade Requirements"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "✅ Validate Edge Upgrade Requirements"
           command: echo "Checking prerequisites for edge deployment"
@@ -107,7 +95,6 @@ jobs:
       # Deploy to Edge
       - should_skip_step:
           step_name: "Deploy to Edge"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🚀 Deploy to Edge"
           command: echo "Deploying to edge"
@@ -115,7 +102,6 @@ jobs:
       # Deploy to Production
       - should_skip_step:
           step_name: "Deploy to Production"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🚀 Deploy to Production"
           command: echo "Deploying to production"
@@ -123,7 +109,6 @@ jobs:
       # Run Performance Tests
       - should_skip_step:
           step_name: "Run Performance Tests"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🔍 Run Performance Tests"
           command: echo "Running performance tests"
@@ -132,7 +117,6 @@ jobs:
       # Update Customer Environments
       - should_skip_step:
           step_name: "Update Customer Environments"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "🚀 Update Customer Environments"
           command: |
@@ -142,7 +126,6 @@ jobs:
       # Prepare On-Prem Artifacts
       - should_skip_step:
           step_name: "Prepare On-Prem Artifacts"
-          skip_steps: << parameters.skip_steps >>
       - run:
           name: "📦 Prepare On-Prem Artifacts"
           command: |
