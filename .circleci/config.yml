@@ -4,9 +4,8 @@ parameters:
   skip_steps:
     type: string
     default: ""
-    description: "Space-separated list of step numbers to skip (e.g., '2 4 8')"
+    description: "Comma-separated list of step names to skip (e.g., 'run_tests,deploy_prod')"
 
-# Define reusable commands
 commands:
   notify_slack:
     description: "Notify Slack about deployment status"
@@ -19,18 +18,17 @@ commands:
   should_skip_step:
     description: "Check if a step should be skipped"
     parameters:
-      step_num:
+      step_name:
         type: string
     steps:
       - run:
-          name: Check if step << parameters.step_num >> should be skipped
+          name: Check if step << parameters.step_name >> should be skipped
           command: |
-            if echo "<< pipeline.parameters.skip_steps >>" | grep -qw "<< parameters.step_num >>"; then
-              echo "Skipping step << parameters.step_num >>"
+            if [[ "<< pipeline.parameters.skip_steps >>" == *"<< parameters.step_name >>"* ]]; then
+              echo "Skipping step << parameters.step_name >>"
               circleci-agent step halt
             fi
 
-# Define jobs
 jobs:
   deploy_pipeline:
     docker:
@@ -38,79 +36,76 @@ jobs:
     steps:
       - checkout
 
-      # Setup and validation
       - should_skip_step:
-          step_num: "1"
+          step_name: "deploy_to_edge_env"
       - run:
-          name: "🔧 Step 1 - Deploy to Edge Environment"
+          name: "🔧 Deploy to Edge Environment"
           command: echo "Pretend we're setting up the environment"
 
-      # Testing phase
       - should_skip_step:
-          step_num: "2"
+          step_name: "run_smoke_tests"
       - run:
-          name: "🧪 Step 2 - Run smoke tests"
-          command: echo "Pretend we're running tests"
+          name: "🧪 Run Smoke Tests"
+          command: echo "Pretend we're running smoke tests"
           no_output_timeout: 30m
 
       - should_skip_step:
-          step_num: "3"
+          step_name: "cleanup_test_env"
       - run:
-          name: "🧪 Step 3 - Cleanup Test Environment"
+          name: "🧪 Cleanup Test Environment"
           command: echo "Pretend we're cleaning up the environment"
 
       - should_skip_step:
-          step_num: "4"
+          step_name: "run_python_tests"
       - run:
-          name: "🧪 Step 4 - Run Python Unit Tests"
-          command: echo "Pretend we're running Python tests"
+          name: "🧪 Run Python Unit Tests"
+          command: echo "Running Python tests"
           no_output_timeout: 30m
 
       - should_skip_step:
-          step_num: "5"
+          step_name: "run_playwright_tests"
       - run:
-          name: "🧪 Step 5 - Run Playwright Tests"
-          command: echo "Pretend we're running Playwright tests"
+          name: "🧪 Run Playwright Tests"
+          command: echo "Running Playwright tests"
           no_output_timeout: 30m
 
-      # Deployment phase
       - should_skip_step:
-          step_num: "6"
+          step_name: "validate_edge_upgrade"
       - run:
-          name: "✅ Step 6 - Validate Edge Upgrade Requirements"
+          name: "✅ Validate Edge Upgrade Requirements"
           command: echo "Checking prerequisites for edge deployment"
 
       - should_skip_step:
-          step_num: "7"
+          step_name: "deploy_to_edge"
       - run:
-          name: "🚀 Step 7 - Deploy to Edge"
+          name: "🚀 Deploy to Edge"
           command: echo "Deploying to edge"
 
       - should_skip_step:
-          step_num: "8"
+          step_name: "deploy_to_prod"
       - run:
-          name: "🚀 Step 8 - Deploy to Production"
+          name: "🚀 Deploy to Production"
           command: echo "Deploying to production"
 
       - should_skip_step:
-          step_num: "9"
+          step_name: "run_perf_tests"
       - run:
-          name: "🔍 Step 9 - Run Performance Tests"
+          name: "🔍 Run Performance Tests"
           command: echo "Running performance tests"
           no_output_timeout: 60m
 
       - should_skip_step:
-          step_num: "10"
+          step_name: "update_customer_envs"
       - run:
-          name: "🚀 Step 10 - Update Customer Environments"
+          name: "🚀 Update Customer Environments"
           command: |
             echo "Updating customer environments"
             echo "Adding verification steps"
 
       - should_skip_step:
-          step_num: "11"
+          step_name: "prepare_onprem_artifacts"
       - run:
-          name: "📦 Step 11 - Prepare On-Prem Artifacts"
+          name: "📦 Prepare On-Prem Artifacts"
           command: |
             echo "Building artifacts"
             echo "Running verification"
