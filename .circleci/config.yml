@@ -1,13 +1,12 @@
 version: 2.1
 
-# Pipeline-level parameter
 parameters:
   skip_steps:
     type: string
     default: ""
-    description: "Step name to skip (e.g., 'Run Playwright Tests')"
+    description: "Comma-separated list of step names to skip (e.g., 'Run Playwright Tests,Run Smoke Tests')"
 
-# Reusable commands
+# Define reusable commands
 commands:
   notify_slack:
     description: "Notify Slack about deployment status"
@@ -16,6 +15,7 @@ commands:
           name: Send Slack Notification
           command: |
             echo "Implement Slack notification"
+
   should_skip_step:
     description: "Check if a step should be skipped"
     parameters:
@@ -27,11 +27,12 @@ commands:
       - run:
           name: "[Check Skip] << parameters.step_name >>"
           command: |
-            if [ "<< parameters.skip_steps >>" = "<< parameters.step_name >>" ]; then
+            if [[ "<< parameters.skip_steps >>" == *"<< parameters.step_name >>"* ]]; then
               echo "Skipping << parameters.step_name >>"
               circleci-agent step halt
             fi
-# Job definition
+
+# Define jobs
 jobs:
   deploy_pipeline:
     parameters:
@@ -44,6 +45,7 @@ jobs:
       - checkout
       - setup_remote_docker
 
+      # Install circleci CLI if not present
       - run:
           name: Install CircleCI CLI
           command: |
@@ -51,6 +53,7 @@ jobs:
               curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
             fi
 
+      # Deploy to Edge Environment
       - should_skip_step:
           step_name: "Deploy to Edge Environment"
           skip_steps: << parameters.skip_steps >>
@@ -58,6 +61,7 @@ jobs:
           name: "🔧 Deploy to Edge Environment"
           command: echo "Pretend we're setting up the environment"
 
+      # Run Smoke Tests
       - should_skip_step:
           step_name: "Run smoke tests"
           skip_steps: << parameters.skip_steps >>
@@ -66,6 +70,7 @@ jobs:
           command: echo "Pretend we're running tests"
           no_output_timeout: 30m
 
+      # Cleanup Test Environment
       - should_skip_step:
           step_name: "Cleanup Test Environment"
           skip_steps: << parameters.skip_steps >>
@@ -73,6 +78,7 @@ jobs:
           name: "🧪 Cleanup Test Environment"
           command: echo "Pretend we're cleaning up the environment"
 
+      # Run Python Unit Tests
       - should_skip_step:
           step_name: "Run Python Unit Tests"
           skip_steps: << parameters.skip_steps >>
@@ -81,6 +87,7 @@ jobs:
           command: echo "Pretend we're running Python tests"
           no_output_timeout: 30m
 
+      # Run Playwright Tests
       - should_skip_step:
           step_name: "Run Playwright Tests"
           skip_steps: << parameters.skip_steps >>
@@ -89,6 +96,7 @@ jobs:
           command: echo "Pretend we're running Playwright tests"
           no_output_timeout: 30m
 
+      # Validate Edge Upgrade Requirements
       - should_skip_step:
           step_name: "Validate Edge Upgrade Requirements"
           skip_steps: << parameters.skip_steps >>
@@ -96,6 +104,7 @@ jobs:
           name: "✅ Validate Edge Upgrade Requirements"
           command: echo "Checking prerequisites for edge deployment"
 
+      # Deploy to Edge
       - should_skip_step:
           step_name: "Deploy to Edge"
           skip_steps: << parameters.skip_steps >>
@@ -103,6 +112,7 @@ jobs:
           name: "🚀 Deploy to Edge"
           command: echo "Deploying to edge"
 
+      # Deploy to Production
       - should_skip_step:
           step_name: "Deploy to Production"
           skip_steps: << parameters.skip_steps >>
@@ -110,6 +120,7 @@ jobs:
           name: "🚀 Deploy to Production"
           command: echo "Deploying to production"
 
+      # Run Performance Tests
       - should_skip_step:
           step_name: "Run Performance Tests"
           skip_steps: << parameters.skip_steps >>
@@ -118,6 +129,7 @@ jobs:
           command: echo "Running performance tests"
           no_output_timeout: 60m
 
+      # Update Customer Environments
       - should_skip_step:
           step_name: "Update Customer Environments"
           skip_steps: << parameters.skip_steps >>
@@ -127,6 +139,7 @@ jobs:
             echo "Updating customer environments"
             echo "Adding verification steps"
 
+      # Prepare On-Prem Artifacts
       - should_skip_step:
           step_name: "Prepare On-Prem Artifacts"
           skip_steps: << parameters.skip_steps >>
@@ -137,15 +150,15 @@ jobs:
             echo "Running verification"
             echo "Uploading to artifact storage"
 
+      # Notify Slack
       - notify_slack
 
-# Workflow
 workflows:
   version: 2
   deploy_pipeline:
     jobs:
       - deploy_pipeline:
-          skip_steps: << pipeline.parameters.skip_steps >>
+          skip_steps: "<< pipeline.parameters.skip_steps >>"
           filters:
             branches:
               only:
