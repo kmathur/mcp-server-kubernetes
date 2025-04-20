@@ -7,10 +7,16 @@ parameters:
 
 jobs:
   test:
+    parameters:
+      skip_steps:
+        type: string
+        default: ""
     docker:
       - image: cimg/python:3.9
     steps:
-      - run: echo "Skip step param is << pipeline.parameters.skip_steps >>"
+      - run:
+          name: Show skip_steps
+          command: echo "Skip step param is << parameters.skip_steps >>"
 
 workflows:
   version: 2
