@@ -16,11 +16,12 @@ commands:
           name: Send Slack Notification
           command: |
             echo "Implement Slack notification"
-
   should_skip_step:
     description: "Check if a step should be skipped"
     parameters:
       step_name:
+        type: string
+      skip_steps:
         type: string
     steps:
       - run:
@@ -30,7 +31,6 @@ commands:
               echo "Skipping << parameters.step_name >>"
               circleci-agent step halt
             fi
-
 # Job definition
 jobs:
   deploy_pipeline:
