@@ -4,7 +4,7 @@ parameters:
   skip_steps:
     type: string
     default: ""
-    description: "Comma-separated list of step names to skip (e.g., 'Run smoke tests,Run Playwright Tests')"
+    description: "Step name to skip (e.g., 'Run Playwright Tests')"
 
 # Define reusable commands
 commands:
@@ -25,7 +25,8 @@ commands:
       - run:
           name: "[Check Skip] << parameters.step_name >>"
           command: |
-            if [[ "<< pipeline.parameters.skip_steps >>" == *"<< parameters.step_name >>"* ]]; then
+            if [ "<< pipeline.parameters.skip_steps >>" = "<< parameters.step_name >>" ]; then
+              echo "Skipping << parameters.step_name >>"
               circleci-agent step halt
             fi
 
