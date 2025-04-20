@@ -132,4 +132,3 @@ workflows:
             branches:
               only:
                 - main
-          context: org-global
