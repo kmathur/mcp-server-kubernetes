@@ -1,5 +1,11 @@
 version: 2.1
 
+parameters:
+  skip_steps:
+    type: string
+    default: ""
+    description: "Space-separated list of step numbers to skip (e.g., '2 4 8')"
+
 # Define reusable commands
 commands:
   notify_slack:
@@ -10,6 +16,20 @@ commands:
           command: |
             echo "Implement Slack notification"
 
+  should_skip_step:
+    description: "Check if a step should be skipped"
+    parameters:
+      step_num:
+        type: string
+    steps:
+      - run:
+          name: Check if step << parameters.step_num >> should be skipped
+          command: |
+            if echo "<< pipeline.parameters.skip_steps >>" | grep -qw "<< parameters.step_num >>"; then
+              echo "Skipping step << parameters.step_num >>"
+              circleci-agent step halt
+            fi
+
 # Define jobs
 jobs:
   deploy_pipeline:
@@ -19,54 +39,76 @@ jobs:
       - checkout
 
       # Setup and validation
+      - should_skip_step:
+          step_num: "1"
       - run:
           name: "🔧 Step 1 - Deploy to Edge Environment"
           command: echo "Pretend we're setting up the environment"
 
       # Testing phase
+      - should_skip_step:
+          step_num: "2"
       - run:
           name: "🧪 Step 2 - Run smoke tests"
           command: echo "Pretend we're running tests"
           no_output_timeout: 30m
 
+      - should_skip_step:
+          step_num: "3"
       - run:
           name: "🧪 Step 3 - Cleanup Test Environment"
           command: echo "Pretend we're cleaning up the environment"
 
+      - should_skip_step:
+          step_num: "4"
       - run:
           name: "🧪 Step 4 - Run Python Unit Tests"
           command: echo "Pretend we're running Python tests"
           no_output_timeout: 30m
 
+      - should_skip_step:
+          step_num: "5"
       - run:
           name: "🧪 Step 5 - Run Playwright Tests"
           command: echo "Pretend we're running Playwright tests"
           no_output_timeout: 30m
 
       # Deployment phase
+      - should_skip_step:
+          step_num: "6"
       - run:
           name: "✅ Step 6 - Validate Edge Upgrade Requirements"
           command: echo "Checking prerequisites for edge deployment"
 
+      - should_skip_step:
+          step_num: "7"
       - run:
           name: "🚀 Step 7 - Deploy to Edge"
           command: echo "Deploying to edge"
 
+      - should_skip_step:
+          step_num: "8"
       - run:
           name: "🚀 Step 8 - Deploy to Production"
           command: echo "Deploying to production"
 
+      - should_skip_step:
+          step_num: "9"
       - run:
           name: "🔍 Step 9 - Run Performance Tests"
           command: echo "Running performance tests"
           no_output_timeout: 60m
 
+      - should_skip_step:
+          step_num: "10"
       - run:
           name: "🚀 Step 10 - Update Customer Environments"
           command: |
             echo "Updating customer environments"
             echo "Adding verification steps"
 
+      - should_skip_step:
+          step_num: "11"
       - run:
           name: "📦 Step 11 - Prepare On-Prem Artifacts"
           command: |
