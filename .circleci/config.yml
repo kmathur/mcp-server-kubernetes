@@ -33,9 +33,18 @@ commands:
 jobs:
   deploy_pipeline:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/python:3.9
     steps:
       - checkout
+      - setup_remote_docker
+
+      # Install circleci CLI if not present
+      - run:
+          name: Install CircleCI CLI
+          command: |
+            if ! command -v circleci &> /dev/null; then
+              curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
+            fi
 
       - should_skip_step:
           step_name: "Deploy to Edge Environment"
