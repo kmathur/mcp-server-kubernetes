@@ -6,7 +6,6 @@ parameters:
     default: ""
     description: "Step name to skip (e.g., 'Run Playwright Tests')"
 
-# Define reusable commands
 commands:
   notify_slack:
     description: "Notify Slack about deployment status"
@@ -30,7 +29,6 @@ commands:
               circleci-agent step halt
             fi
 
-# Define jobs
 jobs:
   deploy_pipeline:
     parameters:
@@ -43,7 +41,6 @@ jobs:
       - checkout
       - setup_remote_docker
 
-      # Install circleci CLI if not present
       - run:
           name: Install CircleCI CLI
           command: |
@@ -133,7 +130,7 @@ workflows:
   deploy_pipeline:
     jobs:
       - deploy_pipeline:
-          skip_steps: "<< pipeline.parameters.skip_steps >>"
+          skip_steps: << pipeline.parameters.skip_steps >>
           filters:
             branches:
               only:
