@@ -33,6 +33,10 @@ commands:
 # Define jobs
 jobs:
   deploy_pipeline:
+    parameters:
+      skip_steps:
+        type: string
+        default: ""
     docker:
       - image: cimg/python:3.9
     steps:
@@ -141,7 +145,8 @@ workflows:
   deploy_pipeline:
     jobs:
       - deploy_pipeline:
-          skip_steps: "<< pipeline.parameters.skip_steps >>"
+          # Pass parameters directly to the job
+          skip_steps: << pipeline.parameters.skip_steps >>
           filters:
             branches:
               only:
