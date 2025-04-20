@@ -16,27 +16,25 @@ commands:
           command: |
             echo "Implement Slack notification"
 
-  should_skip_step:
-    description: "Check if a step should be skipped"
+  log_step_check:
+    description: "Log if a step will be executed"
     parameters:
       step_name:
         type: string
     steps:
       - run:
-          name: "[Check Skip] << parameters.step_name >>"
+          name: "Checking if '<< parameters.step_name >>' should be skipped"
           command: |
-            if [[ "<< pipeline.parameters.skip_steps >>" == *"<< parameters.step_name >>"* ]]; then
-              echo "Skipping << parameters.step_name >>"
-              circleci-agent step halt
+            SKIP_LIST=",<< pipeline.parameters.skip_steps >>,"
+            if [[ "$SKIP_LIST" == *",<< parameters.step_name >>,"* ]]; then
+              echo "SKIPPING: '<< parameters.step_name >>' is in the skip list"
+            else
+              echo "EXECUTING: '<< parameters.step_name >>' will be executed"
             fi
 
 # Define jobs
 jobs:
   deploy_pipeline:
-    parameters:
-      skip_steps:
-        type: string
-        default: ""
     docker:
       - image: cimg/python:3.9
     steps:
@@ -52,90 +50,174 @@ jobs:
             fi
 
       # Deploy to Edge Environment
-      - should_skip_step:
+      - log_step_check:
           step_name: "Deploy to Edge Environment"
-      - run:
-          name: "🔧 Deploy to Edge Environment"
-          command: echo "Pretend we're setting up the environment"
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Deploy to Edge Environment.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🔧 Deploy to Edge Environment"
+                command: echo "Pretend we're setting up the environment"
 
       # Run Smoke Tests
-      - should_skip_step:
+      - log_step_check:
           step_name: "Run smoke tests"
-      - run:
-          name: "🧪 Run smoke tests"
-          command: echo "Pretend we're running tests"
-          no_output_timeout: 30m
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Run smoke tests.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🧪 Run smoke tests"
+                command: echo "Pretend we're running tests"
+                no_output_timeout: 30m
 
       # Cleanup Test Environment
-      - should_skip_step:
+      - log_step_check:
           step_name: "Cleanup Test Environment"
-      - run:
-          name: "🧪 Cleanup Test Environment"
-          command: echo "Pretend we're cleaning up the environment"
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Cleanup Test Environment.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🧪 Cleanup Test Environment"
+                command: echo "Pretend we're cleaning up the environment"
 
       # Run Python Unit Tests
-      - should_skip_step:
+      - log_step_check:
           step_name: "Run Python Unit Tests"
-      - run:
-          name: "🧪 Run Python Unit Tests"
-          command: echo "Pretend we're running Python tests"
-          no_output_timeout: 30m
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Run Python Unit Tests.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🧪 Run Python Unit Tests"
+                command: echo "Pretend we're running Python tests"
+                no_output_timeout: 30m
 
       # Run Playwright Tests
-      - should_skip_step:
+      - log_step_check:
           step_name: "Run Playwright Tests"
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Run Playwright Tests.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🧪 Run Playwright Tests"
+                command: echo "Pretend we're running Playwright tests"
+                no_output_timeout: 30m
+
+      # Verify we can continue after Playwright
       - run:
-          name: "🧪 Run Playwright Tests"
-          command: echo "Pretend we're running Playwright tests"
-          no_output_timeout: 30m
+          name: "Debug after Playwright"
+          command: |
+            echo "After Playwright tests - continuing with pipeline"
+            echo "Current time: $(date)"
 
       # Validate Edge Upgrade Requirements
-      - should_skip_step:
+      - log_step_check:
           step_name: "Validate Edge Upgrade Requirements"
-      - run:
-          name: "✅ Validate Edge Upgrade Requirements"
-          command: echo "Checking prerequisites for edge deployment"
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Validate Edge Upgrade Requirements.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "✅ Validate Edge Upgrade Requirements"
+                command: echo "Checking prerequisites for edge deployment"
 
       # Deploy to Edge
-      - should_skip_step:
+      - log_step_check:
           step_name: "Deploy to Edge"
-      - run:
-          name: "🚀 Deploy to Edge"
-          command: echo "Deploying to edge"
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Deploy to Edge.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🚀 Deploy to Edge"
+                command: echo "Deploying to edge"
 
       # Deploy to Production
-      - should_skip_step:
+      - log_step_check:
           step_name: "Deploy to Production"
-      - run:
-          name: "🚀 Deploy to Production"
-          command: echo "Deploying to production"
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Deploy to Production.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🚀 Deploy to Production"
+                command: echo "Deploying to production"
 
       # Run Performance Tests
-      - should_skip_step:
+      - log_step_check:
           step_name: "Run Performance Tests"
-      - run:
-          name: "🔍 Run Performance Tests"
-          command: echo "Running performance tests"
-          no_output_timeout: 60m
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Run Performance Tests.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🔍 Run Performance Tests"
+                command: echo "Running performance tests"
+                no_output_timeout: 60m
 
       # Update Customer Environments
-      - should_skip_step:
+      - log_step_check:
           step_name: "Update Customer Environments"
-      - run:
-          name: "🚀 Update Customer Environments"
-          command: |
-            echo "Updating customer environments"
-            echo "Adding verification steps"
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Update Customer Environments.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "🚀 Update Customer Environments"
+                command: |
+                  echo "Updating customer environments"
+                  echo "Adding verification steps"
 
       # Prepare On-Prem Artifacts
-      - should_skip_step:
+      - log_step_check:
           step_name: "Prepare On-Prem Artifacts"
-      - run:
-          name: "📦 Prepare On-Prem Artifacts"
-          command: |
-            echo "Building artifacts"
-            echo "Running verification"
-            echo "Uploading to artifact storage"
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: ".*Prepare On-Prem Artifacts.*"
+                value: ",<< pipeline.parameters.skip_steps >>,"
+          steps:
+            - run:
+                name: "📦 Prepare On-Prem Artifacts"
+                command: |
+                  echo "Building artifacts"
+                  echo "Running verification"
+                  echo "Uploading to artifact storage"
 
       # Notify Slack
       - notify_slack
@@ -146,8 +228,7 @@ workflows:
     jobs:
       - deploy_pipeline:
           name: deploy_pipeline
-          skip_steps: << pipeline.parameters.skip_steps >>
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          filters:
+            branches:
+              only:
+                - main
