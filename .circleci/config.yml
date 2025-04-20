@@ -1,21 +1,23 @@
 version: 2.1
 
 parameters:
-  skip_steps_by_name:
+  skip_steps:
     type: string
     default: ""
-    description: "Comma-separated list of keywords to fuzzy match for skipped step names"
+    description: "Comma-separated list of step names to skip (e.g., 'Run smoke tests,Run Playwright Tests')"
 
+# Define reusable commands
 commands:
   notify_slack:
     description: "Notify Slack about deployment status"
     steps:
       - run:
           name: Send Slack Notification
-          command: echo "Slack notification logic here"
+          command: |
+            echo "Implement Slack notification"
 
-  should_skip_step_by_name:
-    description: "Skip step based on fuzzy match with step name"
+  should_skip_step:
+    description: "Check if a step should be skipped"
     parameters:
       step_name:
         type: string
@@ -23,14 +25,12 @@ commands:
       - run:
           name: Check if step << parameters.step_name >> should be skipped
           command: |
-            SKIP_STEPS=$(echo "<< pipeline.parameters.skip_steps_by_name >>" | tr '[:upper:]' '[:lower:]')
-            STEP_NAME=$(echo "<< parameters.step_name >>" | tr '[:upper:]' '[:lower:]')
-
-            if echo "$SKIP_STEPS" | grep -q "$STEP_NAME"; then
-              echo "[Skipped] << parameters.step_name >>"
+            if [[ "<< pipeline.parameters.skip_steps >>" == *"<< parameters.step_name >>"* ]]; then
+              echo "Skipping step << parameters.step_name >>"
               circleci-agent step halt
             fi
 
+# Define jobs
 jobs:
   deploy_pipeline:
     docker:
@@ -39,75 +39,82 @@ jobs:
       - checkout
 
       # Setup and validation
-      - should_skip_step_by_name:
-          step_name: "Step 1 - Deploy to Edge Environment"
+      - should_skip_step:
+          step_name: "Deploy to Edge Environment"
       - run:
-          name: "🔧 Step 1 - Deploy to Edge Environment"
-          command: echo "Setting up environment"
+          name: "🔧 Deploy to Edge Environment"
+          command: echo "Pretend we're setting up the environment"
 
-      - should_skip_step_by_name:
-          step_name: "Step 2 - Run smoke tests"
+      # Testing phase
+      - should_skip_step:
+          step_name: "Run smoke tests"
       - run:
-          name: "🧪 Step 2 - Run smoke tests"
-          command: echo "Running smoke tests"
+          name: "🧪 Run smoke tests"
+          command: echo "Pretend we're running tests"
           no_output_timeout: 30m
 
-      - should_skip_step_by_name:
-          step_name: "Step 3 - Cleanup Test Environment"
+      - should_skip_step:
+          step_name: "Cleanup Test Environment"
       - run:
-          name: "🧪 Step 3 - Cleanup Test Environment"
-          command: echo "Cleaning up environment"
+          name: "🧪 Cleanup Test Environment"
+          command: echo "Pretend we're cleaning up the environment"
 
-      - should_skip_step_by_name:
-          step_name: "Step 4 - Run Python Unit Tests"
+      - should_skip_step:
+          step_name: "Run Python Unit Tests"
       - run:
-          name: "🧪 Step 4 - Run Python Unit Tests"
-          command: echo "Running Python unit tests"
+          name: "🧪 Run Python Unit Tests"
+          command: echo "Pretend we're running Python tests"
           no_output_timeout: 30m
 
-      - should_skip_step_by_name:
-          step_name: "Step 5 - Run Playwright Tests"
+      - should_skip_step:
+          step_name: "Run Playwright Tests"
       - run:
-          name: "🧪 Step 5 - Run Playwright Tests"
-          command: echo "Running Playwright tests"
+          name: "🧪 Run Playwright Tests"
+          command: echo "Pretend we're running Playwright tests"
           no_output_timeout: 30m
 
-      - should_skip_step_by_name:
-          step_name: "Step 6 - Validate Edge Upgrade Requirements"
+      # Deployment phase
+      - should_skip_step:
+          step_name: "Validate Edge Upgrade Requirements"
       - run:
-          name: "✅ Step 6 - Validate Edge Upgrade Requirements"
-          command: echo "Checking prerequisites"
+          name: "✅ Validate Edge Upgrade Requirements"
+          command: echo "Checking prerequisites for edge deployment"
 
-      - should_skip_step_by_name:
-          step_name: "Step 7 - Deploy to Edge"
+      - should_skip_step:
+          step_name: "Deploy to Edge"
       - run:
-          name: "🚀 Step 7 - Deploy to Edge"
+          name: "🚀 Deploy to Edge"
           command: echo "Deploying to edge"
 
-      - should_skip_step_by_name:
-          step_name: "Step 8 - Deploy to Production"
+      - should_skip_step:
+          step_name: "Deploy to Production"
       - run:
-          name: "🚀 Step 8 - Deploy to Production"
+          name: "🚀 Deploy to Production"
           command: echo "Deploying to production"
 
-      - should_skip_step_by_name:
-          step_name: "Step 9 - Run Performance Tests"
+      - should_skip_step:
+          step_name: "Run Performance Tests"
       - run:
-          name: "🔍 Step 9 - Run Performance Tests"
+          name: "🔍 Run Performance Tests"
           command: echo "Running performance tests"
           no_output_timeout: 60m
 
-      - should_skip_step_by_name:
-          step_name: "Step 10 - Update Customer Environments"
+      - should_skip_step:
+          step_name: "Update Customer Environments"
       - run:
-          name: "🚀 Step 10 - Update Customer Environments"
-          command: echo "Updating customer environments"
+          name: "🚀 Update Customer Environments"
+          command: |
+            echo "Updating customer environments"
+            echo "Adding verification steps"
 
-      - should_skip_step_by_name:
-          step_name: "Step 11 - Prepare On-Prem Artifacts"
+      - should_skip_step:
+          step_name: "Prepare On-Prem Artifacts"
       - run:
-          name: "📦 Step 11 - Prepare On-Prem Artifacts"
-          command: echo "Building and uploading artifacts"
+          name: "📦 Prepare On-Prem Artifacts"
+          command: |
+            echo "Building artifacts"
+            echo "Running verification"
+            echo "Uploading to artifact storage"
 
       - notify_slack
 
@@ -115,4 +122,4 @@ workflows:
   version: 2
   deploy_pipeline:
     jobs:
-      - deploy_pipeline:
+      - deploy_pipeline # Specify jobs as a list of strings
