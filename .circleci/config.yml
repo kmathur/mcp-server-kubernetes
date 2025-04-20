@@ -145,7 +145,8 @@ workflows:
   deploy_pipeline:
     jobs:
       - deploy_pipeline:
-          skip_steps: << parameters.skip_steps >> # Pass parameter directly from workflow to job
+          name: deploy_pipeline
+          skip_steps: << pipeline.parameters.skip_steps >>
           filters:
             branches:
               only:
