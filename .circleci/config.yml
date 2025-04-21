@@ -38,12 +38,13 @@ commands:
             done
 
             if [[ $SKIP -eq 1 ]]; then
-              circleci env set SKIP_STEP_<< parameters.step_number >> "true"
+              echo "export SKIP_STEP_<< parameters.step_number >>=true" >> $BASH_ENV
               echo "Step << parameters.step_number >> will be skipped"
             else
-              circleci env set SKIP_STEP_<< parameters.step_number >> "false"
+              echo "export SKIP_STEP_<< parameters.step_number >>=false" >> $BASH_ENV
               echo "Step << parameters.step_number >> will be executed"
             fi
+            source $BASH_ENV
 
 # Define jobs
 jobs:
@@ -87,52 +88,59 @@ jobs:
           step_number: "11"
 
       # Step 1: Deploy to Edge Environment
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_1 >>]
-          steps:
-            - run:
-                name: "🔧 Step 1: Deploy to Edge Environment"
-                command: echo "Pretend we're setting up the environment"
+      - run:
+          name: Check Step 1 condition
+          command: |
+            if [[ "$SKIP_STEP_1" != "true" ]]; then
+              echo "🔧 Running Step 1: Deploy to Edge Environment"
+              echo "Pretend we're setting up the environment"
+            else
+              echo "Skipping Step 1"
+            fi
 
       # Step 2: Run Smoke Tests
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_2 >>]
-          steps:
-            - run:
-                name: "🧪 Step 2: Run smoke tests"
-                command: echo "Pretend we're running tests"
-                no_output_timeout: 30m
+      - run:
+          name: Check Step 2 condition
+          command: |
+            if [[ "$SKIP_STEP_2" != "true" ]]; then
+              echo "🧪 Running Step 2: Run smoke tests"
+              echo "Pretend we're running tests"
+            else
+              echo "Skipping Step 2"
+            fi
 
       # Step 3: Cleanup Test Environment
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_3 >>]
-          steps:
-            - run:
-                name: "🧪 Step 3: Cleanup Test Environment"
-                command: echo "Pretend we're cleaning up the environment"
+      - run:
+          name: Check Step 3 condition
+          command: |
+            if [[ "$SKIP_STEP_3" != "true" ]]; then
+              echo "🧪 Running Step 3: Cleanup Test Environment"
+              echo "Pretend we're cleaning up the environment"
+            else
+              echo "Skipping Step 3"
+            fi
 
       # Step 4: Run Python Unit Tests
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_4 >>]
-          steps:
-            - run:
-                name: "🧪 Step 4: Run Python Unit Tests"
-                command: echo "Pretend we're running Python tests"
-                no_output_timeout: 30m
+      - run:
+          name: Check Step 4 condition
+          command: |
+            if [[ "$SKIP_STEP_4" != "true" ]]; then
+              echo "🧪 Running Step 4: Run Python Unit Tests"
+              echo "Pretend we're running Python tests"
+            else
+              echo "Skipping Step 4"
+            fi
 
       # Step 5: Run Playwright Tests
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_5 >>]
-          steps:
-            - run:
-                name: "🧪 Step 5: Run Playwright Tests"
-                command: echo "Pretend we're running Playwright tests"
-                no_output_timeout: 30m
+      - run:
+          name: Check Step 5 condition
+          command: |
+            if [[ "$SKIP_STEP_5" != "true" ]]; then
+              echo "🧪 Running Step 5: Run Playwright Tests"
+              echo "Pretend we're running Playwright tests"
+            else
+              echo "Skipping Step 5"
+            fi
 
       # Debugging step after Playwright
       - run:
@@ -142,64 +150,73 @@ jobs:
             echo "Current time: $(date)"
 
       # Step 6: Validate Edge Upgrade Requirements
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_6 >>]
-          steps:
-            - run:
-                name: "✅ Step 6: Validate Edge Upgrade Requirements"
-                command: echo "Checking prerequisites for edge deployment"
+      - run:
+          name: Check Step 6 condition
+          command: |
+            if [[ "$SKIP_STEP_6" != "true" ]]; then
+              echo "✅ Running Step 6: Validate Edge Upgrade Requirements"
+              echo "Checking prerequisites for edge deployment"
+            else
+              echo "Skipping Step 6"
+            fi
 
       # Step 7: Deploy to Edge
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_7 >>]
-          steps:
-            - run:
-                name: "🚀 Step 7: Deploy to Edge"
-                command: echo "Deploying to edge"
+      - run:
+          name: Check Step 7 condition
+          command: |
+            if [[ "$SKIP_STEP_7" != "true" ]]; then
+              echo "🚀 Running Step 7: Deploy to Edge"
+              echo "Deploying to edge"
+            else
+              echo "Skipping Step 7"
+            fi
 
       # Step 8: Deploy to Production
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_8 >>]
-          steps:
-            - run:
-                name: "🚀 Step 8: Deploy to Production"
-                command: echo "Deploying to production"
+      - run:
+          name: Check Step 8 condition
+          command: |
+            if [[ "$SKIP_STEP_8" != "true" ]]; then
+              echo "🚀 Running Step 8: Deploy to Production"
+              echo "Deploying to production"
+            else
+              echo "Skipping Step 8"
+            fi
 
       # Step 9: Run Performance Tests
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_9 >>]
-          steps:
-            - run:
-                name: "🔍 Step 9: Run Performance Tests"
-                command: echo "Running performance tests"
-                no_output_timeout: 60m
+      - run:
+          name: Check Step 9 condition
+          command: |
+            if [[ "$SKIP_STEP_9" != "true" ]]; then
+              echo "🔍 Running Step 9: Run Performance Tests"
+              echo "Running performance tests"
+            else
+              echo "Skipping Step 9"
+            fi
 
       # Step 10: Update Customer Environments
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_10 >>]
-          steps:
-            - run:
-                name: "🚀 Step 10: Update Customer Environments"
-                command: |
-                  echo "Updating customer environments"
-                  echo "Adding verification steps"
+      - run:
+          name: Check Step 10 condition
+          command: |
+            if [[ "$SKIP_STEP_10" != "true" ]]; then
+              echo "🚀 Running Step 10: Update Customer Environments"
+              echo "Updating customer environments"
+              echo "Adding verification steps"
+            else
+              echo "Skipping Step 10"
+            fi
 
       # Step 11: Prepare On-Prem Artifacts
-      - when:
-          condition:
-            equal: [false, << environment.SKIP_STEP_11 >>]
-          steps:
-            - run:
-                name: "📦 Step 11: Prepare On-Prem Artifacts"
-                command: |
-                  echo "Building artifacts"
-                  echo "Running verification"
-                  echo "Uploading to artifact storage"
+      - run:
+          name: Check Step 11 condition
+          command: |
+            if [[ "$SKIP_STEP_11" != "true" ]]; then
+              echo "📦 Running Step 11: Prepare On-Prem Artifacts"
+              echo "Building artifacts"
+              echo "Running verification"
+              echo "Uploading to artifact storage"
+            else
+              echo "Skipping Step 11"
+            fi
 
       # Notify Slack
       - notify_slack
