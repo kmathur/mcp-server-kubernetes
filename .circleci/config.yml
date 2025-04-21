@@ -72,7 +72,9 @@ jobs:
                 command: |
                   echo "🔧 Running Step 1: Deploy to Edge Environment"
                   echo "Pretend we're setting up the environment"
-          else:
+      - unless:
+          condition: << pipeline.parameters.step_1 >>
+          steps:
             - run:
                 name: "Step 1: Deploy to Edge Environment [skipped]"
                 command: echo "Step skipped via configuration"
@@ -86,7 +88,9 @@ jobs:
                 command: |
                   echo "🧪 Running Step 2: Run smoke tests"
                   echo "Pretend we're running tests"
-          else:
+      - unless:
+          condition: << pipeline.parameters.step_2 >>
+          steps:
             - run:
                 name: "Step 2: Run Smoke Tests [skipped]"
                 command: echo "Step skipped via configuration"
@@ -100,6 +104,12 @@ jobs:
                 command: |
                   echo "🧪 Running Step 3: Cleanup Test Environment"
                   echo "Pretend we're cleaning up the environment"
+      - unless:
+          condition: << pipeline.parameters.step_3 >>
+          steps:
+            - run:
+                name: "Step 3: Cleanup Test Environment [skipped]"
+                command: echo "Step skipped via configuration"
 
       # Step 4: Run Python Unit Tests
       - when:
@@ -110,6 +120,12 @@ jobs:
                 command: |
                   echo "🧪 Running Step 4: Run Python Unit Tests"
                   echo "Pretend we're running Python tests"
+      - unless:
+          condition: << pipeline.parameters.step_4 >>
+          steps:
+            - run:
+                name: "Step 4: Run Python Unit Tests [skipped]"
+                command: echo "Step skipped via configuration"
 
       # Step 5: Run Playwright Tests
       - when:
@@ -120,6 +136,12 @@ jobs:
                 command: |
                   echo "🧪 Running Step 5: Run Playwright Tests"
                   echo "Pretend we're running Playwright tests"
+      - unless:
+          condition: << pipeline.parameters.step_5 >>
+          steps:
+            - run:
+                name: "Step 5: Run Playwright Tests [skipped]"
+                command: echo "Step skipped via configuration"
 
       # Step 6: Validate Edge Upgrade Requirements
       - when:
@@ -130,6 +152,12 @@ jobs:
                 command: |
                   echo "✅ Running Step 6: Validate Edge Upgrade Requirements"
                   echo "Checking prerequisites for edge deployment"
+      - unless:
+          condition: << pipeline.parameters.step_6 >>
+          steps:
+            - run:
+                name: "Step 6: Validate Edge Upgrade Requirements [skipped]"
+                command: echo "Step skipped via configuration"
 
       # Step 7: Deploy to Edge
       - when:
@@ -140,6 +168,12 @@ jobs:
                 command: |
                   echo "🚀 Running Step 7: Deploy to Edge"
                   echo "Deploying to edge"
+      - unless:
+          condition: << pipeline.parameters.step_7 >>
+          steps:
+            - run:
+                name: "Step 7: Deploy to Edge [skipped]"
+                command: echo "Step skipped via configuration"
 
       # Step 8: Deploy to Production
       - when:
@@ -150,6 +184,12 @@ jobs:
                 command: |
                   echo "🚀 Running Step 8: Deploy to Production"
                   echo "Deploying to production"
+      - unless:
+          condition: << pipeline.parameters.step_8 >>
+          steps:
+            - run:
+                name: "Step 8: Deploy to Production [skipped]"
+                command: echo "Step skipped via configuration"
 
       # Step 9: Run Performance Tests
       - when:
@@ -160,6 +200,12 @@ jobs:
                 command: |
                   echo "🔍 Running Step 9: Run Performance Tests"
                   echo "Running performance tests"
+      - unless:
+          condition: << pipeline.parameters.step_9 >>
+          steps:
+            - run:
+                name: "Step 9: Run Performance Tests [skipped]"
+                command: echo "Step skipped via configuration"
 
       # Step 10: Update Customer Environments
       - when:
@@ -171,6 +217,12 @@ jobs:
                   echo "🚀 Running Step 10: Update Customer Environments"
                   echo "Updating customer environments"
                   echo "Adding verification steps"
+      - unless:
+          condition: << pipeline.parameters.step_10 >>
+          steps:
+            - run:
+                name: "Step 10: Update Customer Environments [skipped]"
+                command: echo "Step skipped via configuration"
 
       # Step 11: Prepare On-Prem Artifacts
       - when:
@@ -183,6 +235,12 @@ jobs:
                   echo "Building artifacts"
                   echo "Running verification"
                   echo "Uploading to artifact storage"
+      - unless:
+          condition: << pipeline.parameters.step_11 >>
+          steps:
+            - run:
+                name: "Step 11: Prepare On-Prem Artifacts [skipped]"
+                command: echo "Step skipped via configuration"
 
       - notify_slack
 
