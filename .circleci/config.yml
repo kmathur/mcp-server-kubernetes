@@ -16,34 +16,28 @@ commands:
           command: |
             echo "Implement Slack notification"
 
-  check_if_skipped:
-    description: "Returns true if step should be skipped"
-    parameters:
-      step_number:
-        type: string
+  setup_skip_steps:
+    description: "Set up environment variables for all steps at once"
     steps:
       - run:
-          name: Check if step \<< parameters.step_number >> should be skipped
+          name: Configure step skipping
           command: |
             # Convert skip_steps to an array
-            IFS=',' read -ra SKIP_ARRAY \<<< "\<< pipeline.parameters.skip_steps >>"
+            IFS=',' read -ra SKIP_ARRAY <<< "<< pipeline.parameters.skip_steps >>"
 
-            # Check if the current step number is in the array
-            SKIP=0
+            # Initialize all steps as not skipped
+            for i in {1..11}; do
+              echo "export SKIP_STEP_${i}=false" >> "$BASH_ENV"
+            done
+
+            # Mark specified steps as skipped
             for num in "${SKIP_ARRAY[@]}"; do
-              if [[ "$num" == "\<< parameters.step_number >>" ]]; then
-                SKIP=1
-                break
+              if [[ -n "$num" ]]; then
+                echo "export SKIP_STEP_${num}=true" >> "$BASH_ENV"
+                echo "Step ${num} will be skipped"
               fi
             done
 
-            if [[ $SKIP -eq 1 ]]; then
-              echo "export SKIP_STEP_\<< parameters.step_number >>=true" >> "$BASH_ENV"
-              echo "Step \<< parameters.step_number >> will be skipped"
-            else
-              echo "export SKIP_STEP_\<< parameters.step_number >>=false" >> "$BASH_ENV"
-              echo "Step \<< parameters.step_number >> will be executed"
-            fi
             source "$BASH_ENV"
 
 # Define jobs
@@ -63,29 +57,8 @@ jobs:
               curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
             fi
 
-      # Set up skipping environment variables
-      - check_if_skipped:
-          step_number: "1"
-      - check_if_skipped:
-          step_number: "2"
-      - check_if_skipped:
-          step_number: "3"
-      - check_if_skipped:
-          step_number: "4"
-      - check_if_skipped:
-          step_number: "5"
-      - check_if_skipped:
-          step_number: "6"
-      - check_if_skipped:
-          step_number: "7"
-      - check_if_skipped:
-          step_number: "8"
-      - check_if_skipped:
-          step_number: "9"
-      - check_if_skipped:
-          step_number: "10"
-      - check_if_skipped:
-          step_number: "11"
+      # Set up all skip flags at once
+      - setup_skip_steps
 
       # Step 1: Deploy to Edge Environment
       - run:
