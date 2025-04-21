@@ -571,6 +571,19 @@ server.setRequestHandler(
           return await invokeCirclePipeline(
             input as {
               branch: string;
+              parameters?: {
+                step_1?: boolean;
+                step_2?: boolean;
+                step_3?: boolean;
+                step_4?: boolean;
+                step_5?: boolean;
+                step_6?: boolean;
+                step_7?: boolean;
+                step_8?: boolean;
+                step_9?: boolean;
+                step_10?: boolean;
+                step_11?: boolean;
+              }
             }
           );
         }
