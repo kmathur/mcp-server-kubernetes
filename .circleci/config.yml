@@ -208,5 +208,5 @@ workflows:
   version: 2
   deploy_pipeline:
     jobs:
-      - deploy_pipeline
+      - deploy_pipeline:
           skip_steps: << pipeline.parameters.skip_steps >>
