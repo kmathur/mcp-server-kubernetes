@@ -98,7 +98,7 @@ jobs:
       # Step 2: Run Smoke Tests
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_2 >>]
+            equal: [false, << environment.SKIP_STEP_2 >>]
           steps:
             - run:
                 name: "🧪 Step 2: Run smoke tests"
@@ -108,7 +108,7 @@ jobs:
       # Step 3: Cleanup Test Environment
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_3 >>]
+            equal: [false, << environment.SKIP_STEP_3 >>]
           steps:
             - run:
                 name: "🧪 Step 3: Cleanup Test Environment"
@@ -117,7 +117,7 @@ jobs:
       # Step 4: Run Python Unit Tests
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_4 >>]
+            equal: [false, << environment.SKIP_STEP_4 >>]
           steps:
             - run:
                 name: "🧪 Step 4: Run Python Unit Tests"
@@ -127,7 +127,7 @@ jobs:
       # Step 5: Run Playwright Tests
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_5 >>]
+            equal: [false, << environment.SKIP_STEP_5 >>]
           steps:
             - run:
                 name: "🧪 Step 5: Run Playwright Tests"
@@ -144,7 +144,7 @@ jobs:
       # Step 6: Validate Edge Upgrade Requirements
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_6 >>]
+            equal: [false, << environment.SKIP_STEP_6 >>]
           steps:
             - run:
                 name: "✅ Step 6: Validate Edge Upgrade Requirements"
@@ -153,7 +153,7 @@ jobs:
       # Step 7: Deploy to Edge
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_7 >>]
+            equal: [false, << environment.SKIP_STEP_7 >>]
           steps:
             - run:
                 name: "🚀 Step 7: Deploy to Edge"
@@ -162,7 +162,7 @@ jobs:
       # Step 8: Deploy to Production
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_8 >>]
+            equal: [false, << environment.SKIP_STEP_8 >>]
           steps:
             - run:
                 name: "🚀 Step 8: Deploy to Production"
@@ -171,7 +171,7 @@ jobs:
       # Step 9: Run Performance Tests
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_9 >>]
+            equal: [false, << environment.SKIP_STEP_9 >>]
           steps:
             - run:
                 name: "🔍 Step 9: Run Performance Tests"
@@ -181,7 +181,7 @@ jobs:
       # Step 10: Update Customer Environments
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_10 >>]
+            equal: [false, << environment.SKIP_STEP_10 >>]
           steps:
             - run:
                 name: "🚀 Step 10: Update Customer Environments"
@@ -192,7 +192,7 @@ jobs:
       # Step 11: Prepare On-Prem Artifacts
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_11 >>]
+            equal: [false, << environment.SKIP_STEP_11 >>]
           steps:
             - run:
                 name: "📦 Step 11: Prepare On-Prem Artifacts"
