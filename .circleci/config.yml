@@ -76,7 +76,7 @@ jobs:
           condition: << pipeline.parameters.step_1 >>
           steps:
             - run:
-                name: "Step 1: Deploy to Edge Environment [skipped]"
+                name: "[SKIPPED] Step 1: Deploy to Edge Environment"
                 command: echo "Step skipped via configuration"
 
       # Step 2: Run Smoke Tests
@@ -92,7 +92,7 @@ jobs:
           condition: << pipeline.parameters.step_2 >>
           steps:
             - run:
-                name: "Step 2: Run Smoke Tests [skipped]"
+                name: "[SKIPPED] Step 2: Run Smoke Tests"
                 command: echo "Step skipped via configuration"
 
       # Step 3: Cleanup Test Environment
@@ -108,7 +108,7 @@ jobs:
           condition: << pipeline.parameters.step_3 >>
           steps:
             - run:
-                name: "Step 3: Cleanup Test Environment [skipped]"
+                name: "[SKIPPED] Step 3: Cleanup Test Environment"
                 command: echo "Step skipped via configuration"
 
       # Step 4: Run Python Unit Tests
@@ -124,7 +124,7 @@ jobs:
           condition: << pipeline.parameters.step_4 >>
           steps:
             - run:
-                name: "Step 4: Run Python Unit Tests [skipped]"
+                name: "[SKIPPED] Step 4: Run Python Unit Tests"
                 command: echo "Step skipped via configuration"
 
       # Step 5: Run Playwright Tests
@@ -140,7 +140,7 @@ jobs:
           condition: << pipeline.parameters.step_5 >>
           steps:
             - run:
-                name: "Step 5: Run Playwright Tests [skipped]"
+                name: "[SKIPPED] Step 5: Run Playwright Tests"
                 command: echo "Step skipped via configuration"
 
       # Step 6: Validate Edge Upgrade Requirements
@@ -156,7 +156,7 @@ jobs:
           condition: << pipeline.parameters.step_6 >>
           steps:
             - run:
-                name: "Step 6: Validate Edge Upgrade Requirements [skipped]"
+                name: "[SKIPPED] Step 6: Validate Edge Upgrade Requirements"
                 command: echo "Step skipped via configuration"
 
       # Step 7: Deploy to Edge
@@ -172,7 +172,7 @@ jobs:
           condition: << pipeline.parameters.step_7 >>
           steps:
             - run:
-                name: "Step 7: Deploy to Edge [skipped]"
+                name: "[SKIPPED] Step 7: Deploy to Edge"
                 command: echo "Step skipped via configuration"
 
       # Step 8: Deploy to Production
@@ -188,7 +188,7 @@ jobs:
           condition: << pipeline.parameters.step_8 >>
           steps:
             - run:
-                name: "Step 8: Deploy to Production [skipped]"
+                name: "[SKIPPED] Step 8: Deploy to Production"
                 command: echo "Step skipped via configuration"
 
       # Step 9: Run Performance Tests
@@ -204,7 +204,7 @@ jobs:
           condition: << pipeline.parameters.step_9 >>
           steps:
             - run:
-                name: "Step 9: Run Performance Tests [skipped]"
+                name: "[SKIPPED] Step 9: Run Performance Tests"
                 command: echo "Step skipped via configuration"
 
       # Step 10: Update Customer Environments
@@ -221,7 +221,7 @@ jobs:
           condition: << pipeline.parameters.step_10 >>
           steps:
             - run:
-                name: "Step 10: Update Customer Environments [skipped]"
+                name: "[SKIPPED] Step 10: Update Customer Environments"
                 command: echo "Step skipped via configuration"
 
       # Step 11: Prepare On-Prem Artifacts
@@ -239,7 +239,7 @@ jobs:
           condition: << pipeline.parameters.step_11 >>
           steps:
             - run:
-                name: "Step 11: Prepare On-Prem Artifacts [skipped]"
+                name: "[SKIPPED] Step 11: Prepare On-Prem Artifacts"
                 command: echo "Step skipped via configuration"
 
       - notify_slack
