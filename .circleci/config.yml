@@ -23,7 +23,7 @@ commands:
         type: string
     steps:
       - run:
-          name: "[Check Skip] Step #<< parameters.step_number >>"
+          name: Check if step \#<< parameters.step_number >> should be skipped
           command: |
             # Convert skip_steps to an array
             IFS=',' read -ra SKIP_ARRAY <<< "<< pipeline.parameters.skip_steps >>"
@@ -39,19 +39,15 @@ commands:
 
             if [[ $SKIP -eq 1 ]]; then
               echo "export SKIP_STEP_<< parameters.step_number >>=true" >> $BASH_ENV
-              echo "Step #<< parameters.step_number >> will be skipped"
+              echo "Step \#<< parameters.step_number >> will be skipped"
             else
               echo "export SKIP_STEP_<< parameters.step_number >>=false" >> $BASH_ENV
-              echo "Step #<< parameters.step_number >> will be executed"
+              echo "Step \#<< parameters.step_number >> will be executed"
             fi
 
 # Define jobs
 jobs:
   deploy_pipeline:
-    parameters:
-      skip_steps:
-        type: string
-        default: ""
     docker:
       - image: cimg/python:3.9
     steps:
@@ -93,16 +89,11 @@ jobs:
       # Step 1: Deploy to Edge Environment
       - when:
           condition:
-            not:
-              equal: [true, << pipeline.parameters.skip_steps >>]
+            equal: [false, "${SKIP_STEP_1}"]
           steps:
-            - when:
-                condition:
-                  equal: [false, "${SKIP_STEP_1}"]
-                steps:
-                  - run:
-                      name: "🔧 Step 1: Deploy to Edge Environment"
-                      command: echo "Pretend we're setting up the environment"
+            - run:
+                name: "🔧 Step 1: Deploy to Edge Environment"
+                command: echo "Pretend we're setting up the environment"
 
       # Step 2: Run Smoke Tests
       - when:
@@ -217,6 +208,5 @@ workflows:
   version: 2
   deploy_pipeline:
     jobs:
-      - deploy_pipeline:
-          name: deploy_pipeline
+      - deploy_pipeline
           skip_steps: << pipeline.parameters.skip_steps >>
