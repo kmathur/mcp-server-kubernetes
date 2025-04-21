@@ -210,5 +210,3 @@ workflows:
     jobs:
       - deploy_pipeline:
           context: global
-          parameters:
-            skip_steps: << pipeline.parameters.skip_steps >>
