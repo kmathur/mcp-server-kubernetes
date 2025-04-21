@@ -1,12 +1,51 @@
 version: 2.1
 
 parameters:
-  skip_steps:
-    type: string
-    default: ""
-    description: "Comma-separated list of step numbers to skip (e.g., '3,5,8')"
+  step_1:
+    type: boolean
+    default: true
+    description: "Run Step 1: Deploy to Edge Environment"
+  step_2:
+    type: boolean
+    default: true
+    description: "Run Step 2: Run Smoke Tests"
+  step_3:
+    type: boolean
+    default: true
+    description: "Run Step 3: Cleanup Test Environment"
+  step_4:
+    type: boolean
+    default: true
+    description: "Run Step 4: Run Python Unit Tests"
+  step_5:
+    type: boolean
+    default: true
+    description: "Run Step 5: Run Playwright Tests"
+  step_6:
+    type: boolean
+    default: true
+    description: "Run Step 6: Validate Edge Upgrade Requirements"
+  step_7:
+    type: boolean
+    default: true
+    description: "Run Step 7: Deploy to Edge"
+  step_8:
+    type: boolean
+    default: true
+    description: "Run Step 8: Deploy to Production"
+  step_9:
+    type: boolean
+    default: true
+    description: "Run Step 9: Run Performance Tests"
+  step_10:
+    type: boolean
+    default: true
+    description: "Run Step 10: Update Customer Environments"
+  step_11:
+    type: boolean
+    default: true
+    description: "Run Step 11: Prepare On-Prem Artifacts"
 
-# Define reusable commands
 commands:
   notify_slack:
     description: "Notify Slack about deployment status"
@@ -16,31 +55,6 @@ commands:
           command: |
             echo "Implement Slack notification"
 
-  setup_skip_steps:
-    description: "Set up environment variables for all steps at once"
-    steps:
-      - run:
-          name: Configure step skipping
-          command: |
-            # Convert skip_steps to an array
-            IFS=',' read -ra SKIP_ARRAY <<< "<< pipeline.parameters.skip_steps >>"
-
-            # Initialize all steps as not skipped
-            for i in {1..11}; do
-              echo "export SKIP_STEP_${i}=false" >> "$BASH_ENV"
-            done
-
-            # Mark specified steps as skipped
-            for num in "${SKIP_ARRAY[@]}"; do
-              if [[ -n "$num" ]]; then
-                echo "export SKIP_STEP_${num}=true" >> "$BASH_ENV"
-                echo "Step ${num} will be skipped"
-              fi
-            done
-
-            source "$BASH_ENV"
-
-# Define jobs
 jobs:
   deploy_pipeline:
     docker:
@@ -49,149 +63,119 @@ jobs:
       - checkout
       - setup_remote_docker
 
-      # Install CircleCI CLI if not present
-      - run:
-          name: Install CircleCI CLI
-          command: |
-            if ! command -v circleci &> /dev/null; then
-              curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
-            fi
-
-      # Set up all skip flags at once
-      - setup_skip_steps
-
       # Step 1: Deploy to Edge Environment
-      - run:
-          name: Check Step 1 condition
-          command: |
-            if [[ "$SKIP_STEP_1" != "true" ]]; then
-              echo "🔧 Running Step 1: Deploy to Edge Environment"
-              echo "Pretend we're setting up the environment"
-            else
-              echo "Skipping Step 1"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_1 >>
+          steps:
+            - run:
+                name: "Step 1: Deploy to Edge Environment"
+                command: |
+                  echo "🔧 Running Step 1: Deploy to Edge Environment"
+                  echo "Pretend we're setting up the environment"
 
       # Step 2: Run Smoke Tests
-      - run:
-          name: Check Step 2 condition
-          command: |
-            if [[ "$SKIP_STEP_2" != "true" ]]; then
-              echo "🧪 Running Step 2: Run smoke tests"
-              echo "Pretend we're running tests"
-            else
-              echo "Skipping Step 2"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_2 >>
+          steps:
+            - run:
+                name: "Step 2: Run Smoke Tests"
+                command: |
+                  echo "🧪 Running Step 2: Run smoke tests"
+                  echo "Pretend we're running tests"
 
       # Step 3: Cleanup Test Environment
-      - run:
-          name: Check Step 3 condition
-          command: |
-            if [[ "$SKIP_STEP_3" != "true" ]]; then
-              echo "🧪 Running Step 3: Cleanup Test Environment"
-              echo "Pretend we're cleaning up the environment"
-            else
-              echo "Skipping Step 3"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_3 >>
+          steps:
+            - run:
+                name: "Step 3: Cleanup Test Environment"
+                command: |
+                  echo "🧪 Running Step 3: Cleanup Test Environment"
+                  echo "Pretend we're cleaning up the environment"
 
       # Step 4: Run Python Unit Tests
-      - run:
-          name: Check Step 4 condition
-          command: |
-            if [[ "$SKIP_STEP_4" != "true" ]]; then
-              echo "🧪 Running Step 4: Run Python Unit Tests"
-              echo "Pretend we're running Python tests"
-            else
-              echo "Skipping Step 4"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_4 >>
+          steps:
+            - run:
+                name: "Step 4: Run Python Unit Tests"
+                command: |
+                  echo "🧪 Running Step 4: Run Python Unit Tests"
+                  echo "Pretend we're running Python tests"
 
       # Step 5: Run Playwright Tests
-      - run:
-          name: Check Step 5 condition
-          command: |
-            if [[ "$SKIP_STEP_5" != "true" ]]; then
-              echo "🧪 Running Step 5: Run Playwright Tests"
-              echo "Pretend we're running Playwright tests"
-            else
-              echo "Skipping Step 5"
-            fi
-
-      # Debugging step after Playwright
-      - run:
-          name: "Debug after Playwright"
-          command: |
-            echo "After Playwright tests - continuing with pipeline"
-            echo "Current time: $(date)"
+      - when:
+          condition: << pipeline.parameters.step_5 >>
+          steps:
+            - run:
+                name: "Step 5: Run Playwright Tests"
+                command: |
+                  echo "🧪 Running Step 5: Run Playwright Tests"
+                  echo "Pretend we're running Playwright tests"
 
       # Step 6: Validate Edge Upgrade Requirements
-      - run:
-          name: Check Step 6 condition
-          command: |
-            if [[ "$SKIP_STEP_6" != "true" ]]; then
-              echo "✅ Running Step 6: Validate Edge Upgrade Requirements"
-              echo "Checking prerequisites for edge deployment"
-            else
-              echo "Skipping Step 6"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_6 >>
+          steps:
+            - run:
+                name: "Step 6: Validate Edge Upgrade Requirements"
+                command: |
+                  echo "✅ Running Step 6: Validate Edge Upgrade Requirements"
+                  echo "Checking prerequisites for edge deployment"
 
       # Step 7: Deploy to Edge
-      - run:
-          name: Check Step 7 condition
-          command: |
-            if [[ "$SKIP_STEP_7" != "true" ]]; then
-              echo "🚀 Running Step 7: Deploy to Edge"
-              echo "Deploying to edge"
-            else
-              echo "Skipping Step 7"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_7 >>
+          steps:
+            - run:
+                name: "Step 7: Deploy to Edge"
+                command: |
+                  echo "🚀 Running Step 7: Deploy to Edge"
+                  echo "Deploying to edge"
 
       # Step 8: Deploy to Production
-      - run:
-          name: Check Step 8 condition
-          command: |
-            if [[ "$SKIP_STEP_8" != "true" ]]; then
-              echo "🚀 Running Step 8: Deploy to Production"
-              echo "Deploying to production"
-            else
-              echo "Skipping Step 8"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_8 >>
+          steps:
+            - run:
+                name: "Step 8: Deploy to Production"
+                command: |
+                  echo "🚀 Running Step 8: Deploy to Production"
+                  echo "Deploying to production"
 
       # Step 9: Run Performance Tests
-      - run:
-          name: Check Step 9 condition
-          command: |
-            if [[ "$SKIP_STEP_9" != "true" ]]; then
-              echo "🔍 Running Step 9: Run Performance Tests"
-              echo "Running performance tests"
-            else
-              echo "Skipping Step 9"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_9 >>
+          steps:
+            - run:
+                name: "Step 9: Run Performance Tests"
+                command: |
+                  echo "🔍 Running Step 9: Run Performance Tests"
+                  echo "Running performance tests"
 
       # Step 10: Update Customer Environments
-      - run:
-          name: Check Step 10 condition
-          command: |
-            if [[ "$SKIP_STEP_10" != "true" ]]; then
-              echo "🚀 Running Step 10: Update Customer Environments"
-              echo "Updating customer environments"
-              echo "Adding verification steps"
-            else
-              echo "Skipping Step 10"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_10 >>
+          steps:
+            - run:
+                name: "Step 10: Update Customer Environments"
+                command: |
+                  echo "🚀 Running Step 10: Update Customer Environments"
+                  echo "Updating customer environments"
+                  echo "Adding verification steps"
 
       # Step 11: Prepare On-Prem Artifacts
-      - run:
-          name: Check Step 11 condition
-          command: |
-            if [[ "$SKIP_STEP_11" != "true" ]]; then
-              echo "📦 Running Step 11: Prepare On-Prem Artifacts"
-              echo "Building artifacts"
-              echo "Running verification"
-              echo "Uploading to artifact storage"
-            else
-              echo "Skipping Step 11"
-            fi
+      - when:
+          condition: << pipeline.parameters.step_11 >>
+          steps:
+            - run:
+                name: "Step 11: Prepare On-Prem Artifacts"
+                command: |
+                  echo "📦 Running Step 11: Prepare On-Prem Artifacts"
+                  echo "Building artifacts"
+                  echo "Running verification"
+                  echo "Uploading to artifact storage"
 
-      # Notify Slack
       - notify_slack
 
 workflows:
