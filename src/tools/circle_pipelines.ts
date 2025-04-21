@@ -8,7 +8,7 @@ const payload = {
 
 type InvokeCirclePipelineInput = {
   branch: string;
-  skip_steps?: string[];
+  [key: `step_${number}`]: boolean;  // This allows any step_N where N is a number
 };
 
 const headers = {
@@ -18,7 +18,7 @@ const headers = {
 //console.log('CircleCI API Headers:', headers);
 export const invokeCirclePipelineSchema = {
   name: "invoke_circle_pipeline",
-  description: "Create a new release pipeline for the given branch and optionally skip specific step names",
+  description: "Create a new release pipeline for the given branch and control specific steps",
   inputSchema: {
     type: "object",
     properties: {
@@ -26,15 +26,19 @@ export const invokeCirclePipelineSchema = {
         type: "string",
         description: "Branch to trigger the pipeline",
       },
-      skip_steps: {
-        type: "array",
-        items: {
-          type: "string",
-        },
-        description: "List of step names to skip (e.g., ['run_smoke_tests', 'deploy_to_prod'])",
-      },
+      "step_1": { type: "boolean", description: "Deploy to Edge Environment" },
+      "step_2": { type: "boolean", description: "Run Smoke Tests" },
+      "step_3": { type: "boolean", description: "Cleanup Test Environment" },
+      "step_4": { type: "boolean", description: "Run Python Unit Tests" },
+      "step_5": { type: "boolean", description: "Run Playwright Tests" },
+      "step_6": { type: "boolean", description: "Validate Edge Upgrade Requirements" },
+      "step_7": { type: "boolean", description: "Deploy to Edge" },
+      "step_8": { type: "boolean", description: "Deploy to Production" },
+      "step_9": { type: "boolean", description: "Run Performance Tests" },
+      "step_10": { type: "boolean", description: "Update Customer Environments" },
+      "step_11": { type: "boolean", description: "Prepare On-Prem Artifacts" },
     },
-    required: ["branch"],
+    //required: ["branch"],
   },
 };
 
@@ -43,12 +47,12 @@ export async function invokeCirclePipeline(
   params: InvokeCirclePipelineInput
 ): Promise<{ content: { type: string; text: string }[] }> {
   try {
+    const { branch, ...steps } = params;
     const payload = {
-      branch: params.branch,
-      parameters: {
-        skip_steps: params.skip_steps?.join(",") || "",
-      },
+      branch,
+      parameters: steps
     };
+
     console.log("Triggering CircleCI pipeline with:", JSON.stringify(payload, null, 2));
     const response = await axios.post(URL, payload, { headers });
 
