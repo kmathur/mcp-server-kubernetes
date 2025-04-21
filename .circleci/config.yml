@@ -23,26 +23,26 @@ commands:
         type: string
     steps:
       - run:
-          name: Check if step << parameters.step_number >> should be skipped
+          name: Check if step \<< parameters.step_number >> should be skipped
           command: |
             # Convert skip_steps to an array
-            IFS=',' read -ra SKIP_ARRAY <<< "<< pipeline.parameters.skip_steps >>"
+            IFS=',' read -ra SKIP_ARRAY \<<< "\<< pipeline.parameters.skip_steps >>"
 
             # Check if the current step number is in the array
             SKIP=0
             for num in "${SKIP_ARRAY[@]}"; do
-              if [[ "$num" == "<< parameters.step_number >>" ]]; then
+              if [[ "$num" == "\<< parameters.step_number >>" ]]; then
                 SKIP=1
                 break
               fi
             done
 
             if [[ $SKIP -eq 1 ]]; then
-              echo "export SKIP_STEP_<< parameters.step_number >>=true" >> "$BASH_ENV"
-              echo "Step << parameters.step_number >> will be skipped"
+              echo "export SKIP_STEP_\<< parameters.step_number >>=true" >> "$BASH_ENV"
+              echo "Step \<< parameters.step_number >> will be skipped"
             else
-              echo "export SKIP_STEP_<< parameters.step_number >>=false" >> "$BASH_ENV"
-              echo "Step << parameters.step_number >> will be executed"
+              echo "export SKIP_STEP_\<< parameters.step_number >>=false" >> "$BASH_ENV"
+              echo "Step \<< parameters.step_number >> will be executed"
             fi
             source "$BASH_ENV"
 
