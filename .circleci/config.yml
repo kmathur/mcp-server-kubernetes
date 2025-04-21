@@ -38,10 +38,10 @@ commands:
             done
 
             if [[ $SKIP -eq 1 ]]; then
-              echo "export SKIP_STEP_<< parameters.step_number >>=true" >> "$BASH_ENV"
+              circleci env set SKIP_STEP_<< parameters.step_number >> "true"
               echo "Step << parameters.step_number >> will be skipped"
             else
-              echo "export SKIP_STEP_<< parameters.step_number >>=false" >> "$BASH_ENV"
+              circleci env set SKIP_STEP_<< parameters.step_number >> "false"
               echo "Step << parameters.step_number >> will be executed"
             fi
 
@@ -89,7 +89,7 @@ jobs:
       # Step 1: Deploy to Edge Environment
       - when:
           condition:
-            equal: [false, << pipeline.env.SKIP_STEP_1 >>]
+            equal: [false, << environment.SKIP_STEP_1 >>]
           steps:
             - run:
                 name: "🔧 Step 1: Deploy to Edge Environment"
