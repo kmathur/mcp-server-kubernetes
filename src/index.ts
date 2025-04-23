@@ -73,7 +73,8 @@ import { createService, createServiceSchema } from "./tools/create_service.js";
 import { listContexts, listContextsSchema } from "./tools/list_contexts.js";
 import { getCurrentContext, getCurrentContextSchema } from "./tools/get_current_context.js";
 import { setCurrentContext, setCurrentContextSchema } from "./tools/set_current_context.js";
-
+import { createLightHouseInstance, createLightHouseInstanceSchema, getLightHouseDemoInstance, getLightHouseDemoInstanceSchema } from "./tools/lighthouse_operations.js";
+import { invokeCirclePipeline, invokeCirclePipelineSchema } from "./tools/circle_pipelines.js";
 // Check if non-destructive tools only mode is enabled
 const nonDestructiveTools = process.env.ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS === 'true';
 
@@ -137,6 +138,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     scaleDeploymentSchema,
     DeleteCronJobSchema,
     CreateConfigMapSchema,
+    createLightHouseInstanceSchema,
+    getLightHouseDemoInstanceSchema,
+    invokeCirclePipelineSchema
   ];
 
   // Filter out destructive tools if ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS is set to 'true'
@@ -287,6 +291,26 @@ server.setRequestHandler(
               repo: string;
               namespace: string;
               values?: Record<string, any>;
+            }
+          );
+        }
+
+        case "create_lighthouse_instance": {
+          return await createLightHouseInstance(
+            input as {
+              requester: string;
+              version: string;
+              size: string;
+              gpu: boolean;
+              intention_type: string;
+              expiration_date: string;
+            }
+          );
+        }
+        case "get_lighthouse_demo_instance": {
+          return await getLightHouseDemoInstance(
+            input as {
+              owner: string;
             }
           );
         }
@@ -541,8 +565,28 @@ server.setRequestHandler(
               }>;
             }
           );
-        }
+          }
 
+        case "invoke_circle_pipeline": {
+          return await invokeCirclePipeline(
+            input as {
+              branch: string;
+              parameters?: {
+                step_1?: boolean;
+                step_2?: boolean;
+                step_3?: boolean;
+                step_4?: boolean;
+                step_5?: boolean;
+                step_6?: boolean;
+                step_7?: boolean;
+                step_8?: boolean;
+                step_9?: boolean;
+                step_10?: boolean;
+                step_11?: boolean;
+              }
+            }
+          );
+        }
         default:
           throw new McpError(ErrorCode.InvalidRequest, `Unknown tool: ${name}`);
       }
