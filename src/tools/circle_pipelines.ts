@@ -26,7 +26,9 @@ type InvokeCirclePipelineInput = {
 };
 
 const headers = {
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
+  "Circle-Token": process.env.CIRCLE_CI_TOKEN ?? "",
+
 };
 
 export const invokeCirclePipelineSchema = {

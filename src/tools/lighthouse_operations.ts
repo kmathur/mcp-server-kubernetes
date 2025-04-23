@@ -15,7 +15,7 @@ const payload = {
 
 
 const headers = {
-  Authorization: "key <your_api_key>"
+  Authorization: "key <token>"
 };
 
 export const createLightHouseInstanceSchema = {
